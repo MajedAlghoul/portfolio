@@ -5,10 +5,12 @@ import * as THREE from "three";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    const textContainer = textContainerRef.current;
+    if (!container || !textContainer) return;
 
     const scene = new THREE.Scene();
 
@@ -67,6 +69,19 @@ export default function Home() {
 
     const animate = () => {
       material.uniforms.u_time.value += 0.01;
+
+      // Animate individual letters
+      const letters = textContainer.querySelectorAll("span");
+      letters.forEach((letter, index) => {
+        const time = material.uniforms.u_time.value;
+        const offset = index * 0.1;
+        const wiggleX = Math.sin(time * 3 + offset) * 5;
+        const wiggleY = Math.cos(time * 3 + offset) * 5;
+        (
+          letter as HTMLElement
+        ).style.transform = `translate(${wiggleX}px, ${wiggleY}px)`;
+      });
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
@@ -95,9 +110,16 @@ export default function Home() {
   return (
     <div className="absolute inset-0" ref={containerRef}>
       <div className="absolute inset-0 backdrop-blur-lg flex items-center justify-center">
-        <h1 className="text-[#804010]/60 font-semibold text-3xl sm:text-6xl md:text-7xl lg:text-8xl [text-shadow:_1px_1px_0_rgba(0,0,0,0.3)]">
-          Under Construction
-        </h1>
+        <div
+          ref={textContainerRef}
+          className="flex text-[#804010]/60 font-semibold text-3xl sm:text-6xl md:text-7xl lg:text-8xl [text-shadow:_1px_1px_0_rgba(0,0,0,0.3)]"
+        >
+          {"Under Construction".split("").map((letter, index) => (
+            <span key={index} className="inline-block">
+              {letter === " " ? "\u00A0" : letter}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
