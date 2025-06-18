@@ -25,15 +25,20 @@ export default function Notch() {
       borderRadius: "0px 30px 30px 0px",
       opacity: 0,
       transition: {
-        x: { type: "spring", stiffness: 200, damping: 20, duration: 0.9 },
+        x: {
+          type: "spring" as const,
+          stiffness: 200,
+          damping: 20,
+          duration: 0.9,
+        },
         borderRadius: {
-          type: "spring",
+          type: "spring" as const,
           stiffness: 200,
           damping: 20,
           duration: 0.4,
         },
         opacity: {
-          type: "spring",
+          type: "spring" as const,
           stiffness: 200,
           damping: 20,
           delay: 0.2,
@@ -53,7 +58,7 @@ export default function Notch() {
       borderRadius: "30px 0px 0px 30px",
       transition: {
         borderRadius: {
-          type: "spring",
+          type: "spring" as const,
           stiffness: 200,
           damping: 20,
           duration: 0.4,
@@ -64,9 +69,14 @@ export default function Notch() {
       width: 562,
       borderRadius: "30px 30px 30px 30px",
       transition: {
-        width: { type: "spring", stiffness: 200, damping: 20, duration: 0.3 },
+        width: {
+          type: "spring" as const,
+          stiffness: 200,
+          damping: 20,
+          duration: 0.3,
+        },
         borderRadius: {
-          type: "spring",
+          type: "spring" as const,
           stiffness: 200,
           damping: 20,
           duration: 0.3,
@@ -77,7 +87,12 @@ export default function Notch() {
       width: 502,
       borderRadius: "30px 30px 30px 30px",
       transition: {
-        width: { type: "spring", stiffness: 200, damping: 20, duration: 0.3 },
+        width: {
+          type: "spring" as const,
+          stiffness: 200,
+          damping: 20,
+          duration: 0.3,
+        },
       },
     },
   };
