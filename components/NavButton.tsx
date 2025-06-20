@@ -15,7 +15,9 @@ export default function NavButton({
   return (
     <div
       className={`relative w-[92px] flex items-center justify-center rounded-full h-full ${
-        isOn ? "" : "hover:text-[var(--accent-color)]"
+        isOn
+          ? ""
+          : "hover:text-[var(--accent-color)] hover:transition-all duration-300"
       }`}
     >
       {isOn && (

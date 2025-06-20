@@ -6,6 +6,7 @@ import NavButton from "./NavButton";
 import CtaButton from "./CtaButton";
 import { usePathname } from "next/dist/client/components/navigation";
 import ColorDrop from "./ColorDrop";
+import { useThemeSelect } from "@/contexts/ThemeSelectContext";
 
 export default function Notch() {
   const scrollYMotion = useMotionValue(0);
@@ -13,6 +14,7 @@ export default function Notch() {
   const circleControls = useAnimation();
   const navControls = useAnimation();
   const pathname = usePathname();
+  const { isThemeSelectOpen } = useThemeSelect();
 
   const circleVariants = {
     start: {
@@ -108,7 +110,7 @@ export default function Notch() {
   }, [scrollYMotion]);
 
   useEffect(() => {
-    if (isScrolled) {
+    if (isScrolled || isThemeSelectOpen) {
       navControls.start("flat");
       circleControls.start("merge");
       setTimeout(() => {
@@ -119,7 +121,7 @@ export default function Notch() {
       }, 500);
     } else {
       circleControls.start({
-        x: 140,
+        x: 152,
         borderRadius: "0px 30px 30px 0px",
         opacity: 1,
         transition: {
@@ -144,12 +146,12 @@ export default function Notch() {
         navControls.start("start");
       }, 200);
     }
-  }, [isScrolled, circleControls, navControls]);
+  }, [isScrolled, circleControls, navControls, isThemeSelectOpen]);
 
   return (
     <div className="text-[12px]">
       <motion.div
-        className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 Glass"
+        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 Glass"
         variants={navVariants}
         initial="start"
         animate={navControls}
@@ -173,7 +175,7 @@ export default function Notch() {
       </motion.div>
 
       <motion.div
-        className="fixed top-8 z-40 Glass"
+        className="fixed top-4 z-40 Glass"
         variants={circleVariants}
         initial="start"
         animate={circleControls}

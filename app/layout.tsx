@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../styles/globals.css";
 import { Inter } from "next/font/google";
 import Notch from "@/components/Notch";
+import ThemeSelect from "@/components/ThemeSelect";
+import { ThemeSelectProvider } from "@/contexts/ThemeSelectContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,9 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} antialiased`}>
       <body>
-        <Notch />
-
-        {children}
+        <ThemeSelectProvider>
+          <Notch />
+          <div className="relative flex w-screen h-[calc(100vh-100px)] mt-[100px]">
+            <ThemeSelect />
+            {children}
+          </div>
+        </ThemeSelectProvider>
       </body>
     </html>
   );
