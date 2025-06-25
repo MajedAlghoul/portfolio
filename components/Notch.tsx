@@ -11,19 +11,57 @@ import { useThemeSelect } from "@/contexts/ThemeSelectContext";
 export default function Notch() {
   const scrollYMotion = useMotionValue(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scale, setScale] = useState(1);
   const circleControls = useAnimation();
   const navControls = useAnimation();
   const pathname = usePathname();
   const { isThemeSelectOpen } = useThemeSelect();
 
+  // Calculate responsive scale based on screen width
+  useEffect(() => {
+    const calculateScale = () => {
+      const screenWidth = window.innerWidth;
+
+      // Base widths for desktop
+      const baseNavWidth = 502;
+      const baseExpandedWidth = 562;
+
+      // Calculate total width needed (nav + circle + some padding)
+      const totalWidthNeeded = baseExpandedWidth + 60 + 32; // nav + circle + padding
+
+      // Calculate scale factor for width
+      let widthScale = 1;
+      if (screenWidth < totalWidthNeeded) {
+        widthScale = Math.max(0.4, (screenWidth - 64) / totalWidthNeeded); // Min scale 0.3, with 64px total padding
+      }
+
+      setScale(widthScale);
+    };
+
+    calculateScale();
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, []);
+
+  // Scaled values
+  const scaledNavWidth = Math.round(502 * scale); // Adjusted for better fit
+  const scaledExpandedWidth = Math.round(562 * scale);
+  const scaledHeight = Math.max(38, Math.round(60 * scale)); // Height stops at 48px minimum
+  const scaledCircleSize = Math.max(38, Math.round(60 * scale)); // Circle stops at 48px minimum
+
+  // Calculate centered positioning
+  const totalWidth = scaledExpandedWidth + scaledCircleSize;
+  const navLeftOffset = totalWidth / 2;
+  const circleLeftOffset = (scaledExpandedWidth - scaledCircleSize) / 3.4;
+
   const circleVariants = {
     start: {
-      x: 176,
+      x: scaledExpandedWidth - scaledNavWidth,
       borderRadius: "30px 30px 30px 30px",
       opacity: 1,
     },
     merge: {
-      x: 148,
+      x: scaledExpandedWidth - scaledNavWidth - 28,
       borderRadius: "0px 30px 30px 0px",
       opacity: 0,
       transition: {
@@ -52,11 +90,11 @@ export default function Notch() {
 
   const navVariants = {
     start: {
-      width: 502,
+      width: scaledNavWidth,
       borderRadius: "30px 30px 30px 30px",
     },
     flat: {
-      width: 502,
+      width: scaledNavWidth,
       borderRadius: "30px 0px 0px 30px",
       transition: {
         borderRadius: {
@@ -68,7 +106,7 @@ export default function Notch() {
       },
     },
     expanded: {
-      width: 562,
+      width: scaledExpandedWidth,
       borderRadius: "30px 30px 30px 30px",
       transition: {
         width: {
@@ -86,7 +124,7 @@ export default function Notch() {
       },
     },
     contracted: {
-      width: 502,
+      width: scaledNavWidth,
       borderRadius: "30px 30px 30px 30px",
       transition: {
         width: {
@@ -121,7 +159,7 @@ export default function Notch() {
       }, 500);
     } else {
       circleControls.start({
-        x: 152,
+        x: scaledExpandedWidth - scaledNavWidth - 4,
         borderRadius: "0px 30px 30px 0px",
         opacity: 1,
         transition: {
@@ -146,16 +184,23 @@ export default function Notch() {
         navControls.start("start");
       }, 200);
     }
-  }, [isScrolled, circleControls, navControls, isThemeSelectOpen]);
+  }, [isScrolled, circleControls, navControls, isThemeSelectOpen, scale]);
 
   return (
-    <div className="text-[12px]">
+    <div
+      style={{
+        fontSize: `${Math.max(10, 12 * scale)}px`,
+      }}
+    >
       <motion.div
-        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 Glass"
+        className="fixed top-4 z-50 Glass"
         variants={navVariants}
         initial="start"
         animate={navControls}
-        style={{ height: "60px" }}
+        style={{
+          height: `${scaledHeight}px`,
+          left: `calc(50% - ${navLeftOffset}px)`,
+        }}
       >
         <div className="flex items-center justify-between h-full text-white pr-[12px]">
           <NavButton isOn={pathname === "/"} link="/">
@@ -180,13 +225,13 @@ export default function Notch() {
         initial="start"
         animate={circleControls}
         style={{
-          left: `calc(50% + 100px)`,
-          width: "60px",
-          height: "60px",
+          left: `calc(50% + ${circleLeftOffset}px)`,
+          width: `${scaledCircleSize}px`,
+          height: `${scaledCircleSize}px`,
         }}
       >
         <div className="flex items-center justify-center h-full text-white font-medium text-xl">
-          <ColorDrop></ColorDrop>
+          <ColorDrop />
         </div>
       </motion.div>
     </div>
